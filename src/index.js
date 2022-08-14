@@ -2,8 +2,12 @@ import Phaser from "phaser";
 import sky from "./assets/sky.png";
 import ground from "./assets/platform.png";
 import star from "./assets/star.png";
-import bomb from "./assets/bomb.png";
-import monkey from "./assets/dude.png";
+// import thunder from "./assets/thunder.png"; //was bomb
+// import monkey from "./assets/jessie.png"; //32 by 48 frame dimensions + different frameNums
+import jessie from "./assets/jessie.png";
+import thunder from "./assets/thunder1.png"; //replace all thunder
+import pikachu from "./assets/pikachu.png";
+  //don't ctrl f star bc that also includes "start"
 
 class MyGame extends Phaser.Scene {
   constructor() {
@@ -15,11 +19,11 @@ class MyGame extends Phaser.Scene {
     this.load.image("sky", sky);
     this.load.image("ground", ground);
     this.load.image("star", star);
-    this.load.image("bomb", bomb); 
+    this.load.image("thunder", thunder); 
 
-    this.load.spritesheet("dude", monkey, {
-      frameWidth: 32,
-      frameHeight: 48,
+    this.load.spritesheet("jessie", jessie, {
+      frameWidth: 47,
+      frameHeight: 63,
     });
   }
 
@@ -35,25 +39,25 @@ class MyGame extends Phaser.Scene {
     platforms.create(600, 400, "ground");
     platforms.create(50, 250, "ground");
     platforms.create(750, 220, "ground");
-    this.player = this.physics.add.sprite(100, 450, "dude");
+    this.player = this.physics.add.sprite(100, 450, "jessie");
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, platforms);
     //animation
     this.anims.create({
       key: "turn",
-      frames: [{ key: "dude", frame: 4 }],
+      frames: [{ key: "jessie", frame: 7 }],
       frameRate: 20,
     });
     this.anims.create({
       key: "right",
-      frames: this.anims.generateFrameNumbers("dude", { start: 5, end: 8 }),
+      frames: this.anims.generateFrameNumbers("jessie", { start: 3, end: 5 }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
       key: "left",
-      frames: this.anims.generateFrameNumbers("dude", { start: 0, end: 3 }),
+      frames: this.anims.generateFrameNumbers("jessie", { start: 9, end: 11 }),
       frameRate: 10,
       repeat: -1,
     });
@@ -68,14 +72,14 @@ class MyGame extends Phaser.Scene {
     });
     this.physics.add.collider(stars, platforms);
     this.physics.add.overlap(this.player, stars, collect, null, this);
-    //bombs
+    //thunders
 
-    const bombs = this.physics.add.group();
-    this.physics.add.collider(bombs, platforms);
+    const thunders = this.physics.add.group();
+    this.physics.add.collider(thunders, platforms);
 
-    this.physics.add.collider(this.player, bombs, bombTouched, null, this);
+    this.physics.add.collider(this.player, thunders, thunderTouched, null, this);
 
-    function bombTouched(player, bomb) {
+    function thunderTouched(player, thunder) {
       this.physics.pause();
       this.player.setTint(0xff000);
       this.player.anims.play("turn");
@@ -104,10 +108,10 @@ class MyGame extends Phaser.Scene {
             ? Phaser.Math.Between(400, 800)
             : Phaser.Math.Between(0, 400);
 
-        const bomb = bombs.create(x, 16, "bomb");
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+        const thunder = thunders.create(x, 16, "thunder");
+        thunder.setBounce(1);
+        thunder.setCollideWorldBounds(true);
+        thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
       }
     }
   }

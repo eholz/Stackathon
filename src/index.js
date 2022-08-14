@@ -138,6 +138,16 @@ class MyGame extends Phaser.Scene {
     this.physics.add.collider(stars, platforms);
     this.physics.add.overlap(this.player, stars, collect, null, this);
     
+    const pikachus = this.physics.add.group({
+      key: "pikachu",
+      repeat: 0,
+      setXY: { x: 12, y: 0, stepX: 60 },
+    });
+    
+    this.physics.add.collider(pikachus, platforms);
+    this.physics.add.overlap(this.player, pikachus, collect, null, this);
+    
+    
     //thunders
 
     const thunders = this.physics.add.group();
@@ -145,12 +155,43 @@ class MyGame extends Phaser.Scene {
 
     this.physics.add.collider(this.player, thunders, thunderTouched, null, this);
 
-    function thunderTouched(player, thunder) {
-      this.physics.pause();
-      this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
-      this.player.anims.play("turn");
-    }
+    let lives = 2;
+    const livesText = this.add.text(15, 50, "Lives: " + lives, {
+      fontSize: "32px",
+      fill: "#EE3D73",  //font color
+    });
 
+    function thunderTouched(player, thunder) {
+      if (lives === 1) {
+        this.physics.pause();
+        this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
+        this.player.anims.play("turn");
+      }
+      if (lives === 2) {
+        this.player.setTint(0xff0000);
+        lives -= 1
+        livesText.setText("Lives: " + lives)
+      }
+      
+    }
+    
+    // function thunderTouched(player, thunder) {
+    //   this.physics.pause();
+    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
+    //   this.player.anims.play("turn");
+    // }
+
+    // function thunderTouched(player, pikachu) {
+    //   this.physics.pause();
+    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
+    //   this.player.anims.play("turn");
+    // }
+    
+    // function thunderTouched(player, diglett) {
+    //   this.physics.pause();
+    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
+    //   this.player.anims.play("turn");
+    // }
 
 
     //score text
@@ -161,11 +202,18 @@ class MyGame extends Phaser.Scene {
       fill: "#EE3D73",  //font color
     });
     let score = 0;
+    // let lives = 2;
     
-    //stars collision
+    // stars collision
     function collect(player, star) {
       star.disableBody(true, true);
       score += 1;
+      
+    // score === 1 
+    //     ? scoreText.setText("Pikachu escaped " + score + " time \nLives: " + lives)
+    //     : scoreText.setText("Pikachu escaped " + score + " times \nLives: " + lives);
+
+
       
       score === 1 
         ? scoreText.setText("Pikachu escaped " + score + " time")
@@ -181,12 +229,50 @@ class MyGame extends Phaser.Scene {
             ? Phaser.Math.Between(400, 800)
             : Phaser.Math.Between(0, 400);
 
+        // const pikachu = pikachus.create(x, 16, "thunder");
+        // thunder.setBounce(1);
+        // thunder.setCollideWorldBounds(true);
+        // thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
         const thunder = thunders.create(x, 16, "thunder");
         thunder.setBounce(1);
         thunder.setCollideWorldBounds(true);
         thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
       }
     }
+    
+      // function collect(player, pikachu) {
+      // pikachu.disableBody(true, true);
+      // score += 1;
+      
+      // score === 1 
+      //   ? scoreText.setText("Pikachu escaped " + score + " time")
+      //   : scoreText.setText("Pikachu escaped " + score + " times");
+
+      // var x =
+      //     player.x < 400
+      //       ? Phaser.Math.Between(400, 800)
+      //       : Phaser.Math.Between(0, 400);
+      
+      // if (pikachus.countActive(true) === 0) {
+        
+      //   pikachus.children.iterate(function (child) {
+      //     child.enableBody(true, child.x, 0, true, true);
+      //   });
+
+        // const pikachu = pikachus.create(x, 16, "thunder");
+        // thunder.setBounce(1);
+        // thunder.setCollideWorldBounds(true);
+        // thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+    //     const thunder = thunders.create(x, 16, "thunder");
+    //     thunder.setBounce(1);
+    //     thunder.setCollideWorldBounds(true);
+    //     thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    //   }
+    // }
+    
+    
   }
 
   update() {

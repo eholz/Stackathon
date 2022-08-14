@@ -8,6 +8,13 @@ import jessie from "./assets/jessie.png";
 import thunder from "./assets/thunder1.png"; //replace all thunder
 import pikachu from "./assets/pikachu.png";
   //don't ctrl f star bc that also includes "start"
+import koffing from "./assets/koffing.png";
+import smallPlatform from "./assets/smallPlatform.png";
+import smallerPlatform from "./assets/smallerPlatform.png";
+import smallerPlatform2 from "./assets/smallerPlatform2.png";
+import smallerPlatform3 from "./assets/smallerPlatform3.png";
+import diglett from "./assets/diglett.png";
+
 
 class MyGame extends Phaser.Scene {
   constructor() {
@@ -19,7 +26,14 @@ class MyGame extends Phaser.Scene {
     this.load.image("sky", sky);
     this.load.image("ground", ground);
     this.load.image("star", star);
-    this.load.image("thunder", thunder); 
+    this.load.image("thunder", thunder);
+    this.load.image("koffing", koffing);
+    // this.load.image("smallPlatform", smallPlatform);
+    // this.load.image("smallerPlatform", smallerPlatform);
+    this.load.image("smallerPlatform2", smallerPlatform2);
+    // this.load.image("smallerPlatform3", smallerPlatform3);
+    this.load.image("pikachu", pikachu);
+    this.load.image("diglett", diglett);
 
     this.load.spritesheet("jessie", jessie, {
       frameWidth: 47,
@@ -30,19 +44,59 @@ class MyGame extends Phaser.Scene {
   create() {
     this.add.image(400, 300, "sky"); //put this first so everything else will disply on top of it
 
-    const platforms = this.physics.add.staticGroup();
     //platforms
-    // platforms.create(100, 100, "ground").setScale(2).refreshBody();
-    platforms.create(400, 568, "ground").setScale(2).refreshBody();
+    const platforms = this.physics.add.staticGroup();
+    
+    platforms.create(400, 570, "ground").setScale(2).refreshBody();
+      // (so the ground is 64 y px tall. centered at 570.)
+      // the top of the ground is 538. 
 
-
-    platforms.create(600, 400, "ground");
-    platforms.create(50, 250, "ground");
-    platforms.create(750, 220, "ground");
-    this.player = this.physics.add.sprite(100, 450, "jessie");
-    this.player.setBounce(0.2);
+    //og platforms:
+    // platforms.create(700, 400, "ground");
+    // platforms.create(0, 250, "ground");
+    platforms.create(800, 220, "ground");
+    
+    
+    
+    // platforms.create(100, 500, "smallPlatform");
+    // platforms.create(300, 500, "smallerPlatform");
+    
+    platforms.create(100, 490, "smallerPlatform2");
+    
+    // platforms.create(180, 430, "smallerPlatform2");
+    
+    platforms.create(250, 490, "smallerPlatform2");
+    platforms.create(400, 420, "smallerPlatform2");
+    
+    // platforms.create(400, 300, "smallerPlatform2");
+    // platforms.create(400, 150, "smallerPlatform2"); //land here front and center   
+    
+    platforms.create(500, 500, "smallerPlatform2");
+    
+    // platforms.create(600, 500, "smallerPlatform3");
+    
+    platforms.create(700,532, "diglett");
+      //position it slightly in the ground/platform
+    
+    
+    
+    const movingPlatforms = this.physics.add.staticGroup();
+    movingPlatforms.create(400, 300, "koffing");
+    
+    
+    
+    this.player = this.physics.add.sprite(400, 10, "jessie"); //starting coordinates
+    // this.player = this.physics.add.sprite(100, 450, "jessie");
+    this.player.setBounce(0.1); //0.2
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, platforms);
+    this.physics.add.collider(this.player, movingPlatforms);
+    
+    //add collider for koffing once i figure out how to create non-static group for it
+    
+    
+    
+    
     //animation
     this.anims.create({
       key: "turn",
@@ -61,17 +115,29 @@ class MyGame extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+    
     //stars
+    
+    // left stars
     const stars = this.physics.add.group({
       key: "star",
-      repeat: 11,
-      setXY: { x: 12, y: 0, stepX: 70 },
+      repeat: 5,
+      setXY: { x: 12, y: 0, stepX: 60 },
     });
+    
+    //OG stars
+    // const stars = this.physics.add.group({
+    //   key: "star",
+    //   repeat: 11,
+    //   setXY: { x: 12, y: 0, stepX: 70 },
+    // });
+    
     stars.children.iterate(function (child) {
       child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
     this.physics.add.collider(stars, platforms);
     this.physics.add.overlap(this.player, stars, collect, null, this);
+    
     //thunders
 
     const thunders = this.physics.add.group();
@@ -81,22 +147,29 @@ class MyGame extends Phaser.Scene {
 
     function thunderTouched(player, thunder) {
       this.physics.pause();
-      this.player.setTint(0xff000);
+      this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
       this.player.anims.play("turn");
     }
 
+
+
     //score text
 
-    const scoreText = this.add.text(15, 15, "score: 0", {
+    //starting text
+    const scoreText = this.add.text(15, 15, "CATCH PIKACHU", {
       fontSize: "32px",
-      fill: "#000",
+      fill: "#EE3D73",  //font color
     });
     let score = 0;
+    
     //stars collision
     function collect(player, star) {
       star.disableBody(true, true);
       score += 1;
-      scoreText.setText("Score: " + score);
+      
+      score === 1 
+        ? scoreText.setText("Pikachu escaped " + score + " time")
+        : scoreText.setText("Pikachu escaped " + score + " times");
 
       if (stars.countActive(true) === 0) {
         stars.children.iterate(function (child) {
@@ -129,8 +202,11 @@ class MyGame extends Phaser.Scene {
       this.player.anims.play("turn");
     }
 
+    // if (cursors.up.isDown) {
+    //   this.player.setVelocityY(-250); //-420 //jump height
+    // }
     if (cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-420);
+      this.player.setVelocityY(-250); //-420 //jump height
     }
   }
 }
@@ -143,7 +219,7 @@ const config = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 450 },
+      gravity: { y: 450 }, //{ y: 450 } //x of 4000 isn't that strong...
       debug: false,
     },
   },

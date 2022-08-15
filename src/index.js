@@ -11,6 +11,7 @@ import smallerPlatform2 from "./assets/smallerPlatform2.png";
 // import smallerPlatform3 from "./assets/smallerPlatform3.png";
 import diglett from "./assets/diglett.png";
 // import MovingPlatform from './MovingPlatform'
+let gameOver = false;
 
 class MyGame extends Phaser.Scene {
   constructor() {
@@ -21,7 +22,6 @@ class MyGame extends Phaser.Scene {
     //load images we will use.
     this.load.image("sky", sky);
     this.load.image("ground", ground);
-    this.load.image("star", star);
     this.load.image("thunder", thunder);
     this.load.image("koffing", koffing);
     // this.load.image("smallPlatform", smallPlatform);
@@ -38,7 +38,7 @@ class MyGame extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, "sky"); //put this first so everything else will disply on top of it
+    this.add.image(400, 300, "sky"); //put this first so everything else will display on top of it
 
     //platforms
     const platforms = this.physics.add.staticGroup();
@@ -51,45 +51,23 @@ class MyGame extends Phaser.Scene {
     // platforms.create(700, 400, "ground");
     // platforms.create(0, 250, "ground");
     // platforms.create(800, 220, "ground");
-
-
-    //jessie falling in center 47 wide so no platforms bw 376 and 424...400 += 24 800
-    //platform width of 53, half is 27. no platforms bw 349 to 451 
     
     //pikachu spawns here
     platforms.create(30, 200, "smallerPlatform2");
     
     platforms.create(50, 370, "smallerPlatform2");
-    
     platforms.create(70, 490, "smallerPlatform2");
-    
-    
     platforms.create(180, 430, "smallerPlatform2");
-    
     platforms.create(180, 310, "smallerPlatform2");
-    
     platforms.create(180, 160, "smallerPlatform2");
-    
     platforms.create(260, 250, "smallerPlatform2");
-    
     platforms.create(320, 200, "smallerPlatform2");
-    
-    // platforms.create(250, 490, "smallerPlatform2");
-    
     platforms.create(320, 430, "smallerPlatform2");
-    
     platforms.create(400, 370, "smallerPlatform2");
-
     platforms.create(480, 310, "smallerPlatform2");
-    
     platforms.create(500, 430, "smallerPlatform2");
-    
     platforms.create(560, 250, "smallerPlatform2");
-    
-    // platforms.create(610, 500, "smallerPlatform2");
-    
     platforms.create(630, 500, "smallerPlatform2");
-    
     platforms.create(660, 190, "smallerPlatform2");
     
   //   this.koffing = new MovingPlatform(this, 500, 500, 'koffing', {
@@ -103,12 +81,10 @@ class MyGame extends Phaser.Scene {
        //add collider for koffing once i figure out how to create non-static group for it
     
     this.player = this.physics.add.sprite(400, 10, "jessie"); //starting coordinates
-    // this.player = this.physics.add.sprite(100, 450, "jessie");
     this.player.setBounce(0.1); //0.2
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, platforms);
     
-   
     //animation
     this.anims.create({
       key: "turn",
@@ -128,12 +104,6 @@ class MyGame extends Phaser.Scene {
       repeat: -1,
     });
     
-    // stars.children.iterate(function (child) {
-    //   child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    // });
-    // this.physics.add.collider(stars, platforms);
-    // this.physics.add.overlap(this.player, stars, collect, null, this);
-    
     const digletts = this.physics.add.staticGroup();
     // digletts.create(700, 530, "diglett");
     
@@ -151,7 +121,6 @@ class MyGame extends Phaser.Scene {
     this.physics.add.overlap(this.player, pikachus, collect, null, this);
     
     //thunders
-
     const thunders = this.physics.add.group();
     this.physics.add.collider(thunders, platforms);
 
@@ -160,6 +129,7 @@ class MyGame extends Phaser.Scene {
       //digletts absorb thunders
 
     let lives = 2;
+    //starting text
     const livesText = this.add.text(15, 50, "Lives: " + lives, {
       fontSize: "32px",
       fill: "#EE3D73",  //font color
@@ -170,19 +140,23 @@ class MyGame extends Phaser.Scene {
         this.physics.pause();
         this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
         this.player.anims.play("turn");
-        lives -= 1
-        livesText.setText("Lives: " + lives)
+        lives -= 1;
+        livesText.setText("Lives: " + lives);
+        gameOver = true;
+        const gameOverText = this.add.text(400, 300, "Game Over", {
+          fontSize: "64px",
+          fill: "#EE3D73",  //font color
+        });
+        gameOverText.setOrigin(0.5)
       }
       if (lives === 2) {
         this.player.setTint(0xff0000);
-        lives -= 1
-        livesText.setText("Lives: " + lives)
+        lives -= 1;
+        livesText.setText("Lives: " + lives);
       }
     }
 
     //score text
-
-    //starting text
     const scoreText = this.add.text(15, 15, "What are you waiting for?? CATCH PIKACHU", {
       fontSize: "32px",
       fill: "#EE3D73",  //font color
@@ -221,9 +195,7 @@ class MyGame extends Phaser.Scene {
         
       }
     }
-    
-    console.log(this)
-    
+    // console.log(this)
   }
 
   update() {
@@ -239,9 +211,6 @@ class MyGame extends Phaser.Scene {
       this.player.anims.play("turn");
     }
 
-    // if (cursors.up.isDown) {
-    //   this.player.setVelocityY(-250); //-420 //jump height
-    // }
     if (cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-250); //-420 //jump height
     }
@@ -256,7 +225,7 @@ const config = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 450 }, //{ y: 450 } //x of 4000 isn't that strong...
+      gravity: { y: 450 },
       debug: false,
     },
   },

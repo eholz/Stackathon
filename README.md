@@ -4,11 +4,12 @@ Features:
 
 Keyboard controls to move player
 Animation for player movement 
-Catch Pikachu to gain points
+Catch Pikachu to gain points and spawn Pikachu in a new location
 A new lightning bolt bounces around for each time Pikachu is caught
+Diglett appears and absorbs lightning bolts
+Multiple lives, color change upon losing a life
+
+Future goals:
 Moving platforms (Koffing)
-Color change upon dying     // and getting hurt?
-
-
-? Health bar using Phaser's Graphics API 
-? Using Tiled to layout position collectibles and spawn points
+Health bar using Phaser's Graphics API 
+Use Tiled

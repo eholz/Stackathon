@@ -14,7 +14,7 @@ import smallerPlatform from "./assets/smallerPlatform.png";
 import smallerPlatform2 from "./assets/smallerPlatform2.png";
 import smallerPlatform3 from "./assets/smallerPlatform3.png";
 import diglett from "./assets/diglett.png";
-
+import MovingPlatform from './MovingPlatform'
 
 class MyGame extends Phaser.Scene {
   constructor() {
@@ -54,12 +54,7 @@ class MyGame extends Phaser.Scene {
     //og platforms:
     // platforms.create(700, 400, "ground");
     // platforms.create(0, 250, "ground");
-    platforms.create(800, 220, "ground");
-    
-    
-    
-    // platforms.create(100, 500, "smallPlatform");
-    // platforms.create(300, 500, "smallerPlatform");
+    // platforms.create(800, 220, "ground");
     
     platforms.create(100, 490, "smallerPlatform2");
     
@@ -73,30 +68,23 @@ class MyGame extends Phaser.Scene {
     
     platforms.create(500, 500, "smallerPlatform2");
     
-    // platforms.create(600, 500, "smallerPlatform3");
-    
-    platforms.create(700,532, "diglett");
-      //position it slightly in the ground/platform
-    
-    
-    
-    const movingPlatforms = this.physics.add.staticGroup();
-    movingPlatforms.create(400, 300, "koffing");
-    
-    
+  //   this.koffing = new MovingPlatform(this, 500, 500, 'koffing', {
+		// isStatic: true
+  // 	})
+  // 	this.koffing.moveVertically()
+  	
+    // const movingPlatforms = this.physics.add.staticGroup();
+    // movingPlatforms.create(400, 300, "koffing");
+     // this.physics.add.collider(this.player, movingPlatforms);
+       //add collider for koffing once i figure out how to create non-static group for it
     
     this.player = this.physics.add.sprite(400, 10, "jessie"); //starting coordinates
     // this.player = this.physics.add.sprite(100, 450, "jessie");
     this.player.setBounce(0.1); //0.2
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(this.player, movingPlatforms);
     
-    //add collider for koffing once i figure out how to create non-static group for it
-    
-    
-    
-    
+   
     //animation
     this.anims.create({
       key: "turn",
@@ -116,35 +104,27 @@ class MyGame extends Phaser.Scene {
       repeat: -1,
     });
     
-    //stars
-    
-    // left stars
-    const stars = this.physics.add.group({
-      key: "star",
-      repeat: 5,
-      setXY: { x: 12, y: 0, stepX: 60 },
-    });
-    
-    //OG stars
-    // const stars = this.physics.add.group({
-    //   key: "star",
-    //   repeat: 11,
-    //   setXY: { x: 12, y: 0, stepX: 70 },
+    // stars.children.iterate(function (child) {
+    //   child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     // });
+    // this.physics.add.collider(stars, platforms);
+    // this.physics.add.overlap(this.player, stars, collect, null, this);
     
-    stars.children.iterate(function (child) {
-      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    });
-    this.physics.add.collider(stars, platforms);
-    this.physics.add.overlap(this.player, stars, collect, null, this);
+    const digletts = this.physics.add.staticGroup();
+    digletts.create(700, 530, "diglett");
+    
+    this.physics.add.collider(digletts, platforms);
+    this.physics.add.collider(this.player, digletts);
     
     const pikachus = this.physics.add.group({
       key: "pikachu",
       repeat: 0,
-      setXY: { x: 12, y: 0, stepX: 60 },
+      setXY: { x: 23, y: 0, stepX: 60 },
     });
     
+    
     this.physics.add.collider(pikachus, platforms);
+    this.physics.add.collider(pikachus, digletts);
     this.physics.add.overlap(this.player, pikachus, collect, null, this);
     
     
@@ -154,6 +134,8 @@ class MyGame extends Phaser.Scene {
     this.physics.add.collider(thunders, platforms);
 
     this.physics.add.collider(this.player, thunders, thunderTouched, null, this);
+    this.physics.add.overlap(digletts, thunders, collect, null, this);
+      //digletts absorb thunders
 
     let lives = 2;
     const livesText = this.add.text(15, 50, "Lives: " + lives, {
@@ -166,6 +148,8 @@ class MyGame extends Phaser.Scene {
         this.physics.pause();
         this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
         this.player.anims.play("turn");
+        lives -= 1
+        livesText.setText("Lives: " + lives)
       }
       if (lives === 2) {
         this.player.setTint(0xff0000);
@@ -174,104 +158,50 @@ class MyGame extends Phaser.Scene {
       }
       
     }
-    
-    // function thunderTouched(player, thunder) {
-    //   this.physics.pause();
-    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
-    //   this.player.anims.play("turn");
-    // }
-
-    // function thunderTouched(player, pikachu) {
-    //   this.physics.pause();
-    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
-    //   this.player.anims.play("turn");
-    // }
-    
-    // function thunderTouched(player, diglett) {
-    //   this.physics.pause();
-    //   this.player.setTint(0xff0000); //0xff000, #5A3DA9, 0xff0000 red, 0x + hexcode
-    //   this.player.anims.play("turn");
-    // }
-
 
     //score text
 
     //starting text
-    const scoreText = this.add.text(15, 15, "CATCH PIKACHU", {
+    const scoreText = this.add.text(15, 15, "What are you waiting for??? CATCH PIKACHU", {
       fontSize: "32px",
       fill: "#EE3D73",  //font color
     });
     let score = 0;
-    // let lives = 2;
     
-    // stars collision
-    function collect(player, star) {
-      star.disableBody(true, true);
+    function collect(player, pikachu) {
+      pikachu.disableBody(true, true);
       score += 1;
-      
-    // score === 1 
-    //     ? scoreText.setText("Pikachu escaped " + score + " time \nLives: " + lives)
-    //     : scoreText.setText("Pikachu escaped " + score + " times \nLives: " + lives);
-
-
       
       score === 1 
         ? scoreText.setText("Pikachu escaped " + score + " time")
         : scoreText.setText("Pikachu escaped " + score + " times");
 
-      if (stars.countActive(true) === 0) {
-        stars.children.iterate(function (child) {
-          child.enableBody(true, child.x, 0, true, true);
-        });
+      if (score === 5) {
+        digletts.create(500, 530, "diglett");
+      }
 
+      if (pikachus.countActive(true) === 0) {
+        pikachus.children.iterate(function (child) {
+          child.enableBody(true, true);
+        });
+        
         var x =
           player.x < 400
             ? Phaser.Math.Between(400, 800)
             : Phaser.Math.Between(0, 400);
 
-        // const pikachu = pikachus.create(x, 16, "thunder");
-        // thunder.setBounce(1);
-        // thunder.setCollideWorldBounds(true);
-        // thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
-
+        const pikachu = pikachus.create(x, 16, "pikachu");
+        pikachu.setBounce(.1);
+       
         const thunder = thunders.create(x, 16, "thunder");
-        thunder.setBounce(1);
+        thunder.setBounce(.8);
         thunder.setCollideWorldBounds(true);
         thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
+        
       }
     }
     
-      // function collect(player, pikachu) {
-      // pikachu.disableBody(true, true);
-      // score += 1;
-      
-      // score === 1 
-      //   ? scoreText.setText("Pikachu escaped " + score + " time")
-      //   : scoreText.setText("Pikachu escaped " + score + " times");
-
-      // var x =
-      //     player.x < 400
-      //       ? Phaser.Math.Between(400, 800)
-      //       : Phaser.Math.Between(0, 400);
-      
-      // if (pikachus.countActive(true) === 0) {
-        
-      //   pikachus.children.iterate(function (child) {
-      //     child.enableBody(true, child.x, 0, true, true);
-      //   });
-
-        // const pikachu = pikachus.create(x, 16, "thunder");
-        // thunder.setBounce(1);
-        // thunder.setCollideWorldBounds(true);
-        // thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
-
-    //     const thunder = thunders.create(x, 16, "thunder");
-    //     thunder.setBounce(1);
-    //     thunder.setCollideWorldBounds(true);
-    //     thunder.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    //   }
-    // }
-    
+    console.log(this)
     
   }
 

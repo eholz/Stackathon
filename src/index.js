@@ -1,20 +1,16 @@
 import Phaser from "phaser";
 import sky from "./assets/sky.png";
 import ground from "./assets/platform.png";
-import star from "./assets/star.png";
-// import thunder from "./assets/thunder.png"; //was bomb
-// import monkey from "./assets/jessie.png"; //32 by 48 frame dimensions + different frameNums
 import jessie from "./assets/jessie.png";
-import thunder from "./assets/thunder1.png"; //replace all thunder
+import thunder from "./assets/thunder1.png";
 import pikachu from "./assets/pikachu.png";
-  //don't ctrl f star bc that also includes "start"
 import koffing from "./assets/koffing.png";
-import smallPlatform from "./assets/smallPlatform.png";
-import smallerPlatform from "./assets/smallerPlatform.png";
+// import smallPlatform from "./assets/smallPlatform.png";
+// import smallerPlatform from "./assets/smallerPlatform.png";
 import smallerPlatform2 from "./assets/smallerPlatform2.png";
-import smallerPlatform3 from "./assets/smallerPlatform3.png";
+// import smallerPlatform3 from "./assets/smallerPlatform3.png";
 import diglett from "./assets/diglett.png";
-import MovingPlatform from './MovingPlatform'
+// import MovingPlatform from './MovingPlatform'
 
 class MyGame extends Phaser.Scene {
   constructor() {
@@ -55,18 +51,46 @@ class MyGame extends Phaser.Scene {
     // platforms.create(700, 400, "ground");
     // platforms.create(0, 250, "ground");
     // platforms.create(800, 220, "ground");
+
+
+    //jessie falling in center 47 wide so no platforms bw 376 and 424...400 += 24 800
+    //platform width of 53, half is 27. no platforms bw 349 to 451 
     
-    platforms.create(100, 490, "smallerPlatform2");
+    //pikachu spawns here
+    platforms.create(30, 200, "smallerPlatform2");
     
-    // platforms.create(180, 430, "smallerPlatform2");
+    platforms.create(50, 370, "smallerPlatform2");
     
-    platforms.create(250, 490, "smallerPlatform2");
-    platforms.create(400, 420, "smallerPlatform2");
+    platforms.create(70, 490, "smallerPlatform2");
     
-    // platforms.create(400, 300, "smallerPlatform2");
-    // platforms.create(400, 150, "smallerPlatform2"); //land here front and center   
     
-    platforms.create(500, 500, "smallerPlatform2");
+    platforms.create(180, 430, "smallerPlatform2");
+    
+    platforms.create(180, 310, "smallerPlatform2");
+    
+    platforms.create(180, 160, "smallerPlatform2");
+    
+    platforms.create(260, 250, "smallerPlatform2");
+    
+    platforms.create(320, 200, "smallerPlatform2");
+    
+    // platforms.create(250, 490, "smallerPlatform2");
+    
+    platforms.create(320, 430, "smallerPlatform2");
+    
+    platforms.create(400, 370, "smallerPlatform2");
+
+    platforms.create(480, 310, "smallerPlatform2");
+    
+    platforms.create(500, 430, "smallerPlatform2");
+    
+    platforms.create(560, 250, "smallerPlatform2");
+    
+    // platforms.create(610, 500, "smallerPlatform2");
+    
+    platforms.create(630, 500, "smallerPlatform2");
+    
+    platforms.create(660, 190, "smallerPlatform2");
     
   //   this.koffing = new MovingPlatform(this, 500, 500, 'koffing', {
 		// isStatic: true
@@ -111,7 +135,7 @@ class MyGame extends Phaser.Scene {
     // this.physics.add.overlap(this.player, stars, collect, null, this);
     
     const digletts = this.physics.add.staticGroup();
-    digletts.create(700, 530, "diglett");
+    // digletts.create(700, 530, "diglett");
     
     this.physics.add.collider(digletts, platforms);
     this.physics.add.collider(this.player, digletts);
@@ -119,14 +143,12 @@ class MyGame extends Phaser.Scene {
     const pikachus = this.physics.add.group({
       key: "pikachu",
       repeat: 0,
-      setXY: { x: 23, y: 0, stepX: 60 },
+      setXY: { x: 30, y: 0, stepX: 60 },
     });
-    
     
     this.physics.add.collider(pikachus, platforms);
     this.physics.add.collider(pikachus, digletts);
     this.physics.add.overlap(this.player, pikachus, collect, null, this);
-    
     
     //thunders
 
@@ -156,13 +178,12 @@ class MyGame extends Phaser.Scene {
         lives -= 1
         livesText.setText("Lives: " + lives)
       }
-      
     }
 
     //score text
 
     //starting text
-    const scoreText = this.add.text(15, 15, "What are you waiting for??? CATCH PIKACHU", {
+    const scoreText = this.add.text(15, 15, "What are you waiting for?? CATCH PIKACHU", {
       fontSize: "32px",
       fill: "#EE3D73",  //font color
     });
@@ -176,8 +197,8 @@ class MyGame extends Phaser.Scene {
         ? scoreText.setText("Pikachu escaped " + score + " time")
         : scoreText.setText("Pikachu escaped " + score + " times");
 
-      if (score === 5) {
-        digletts.create(500, 530, "diglett");
+      if (score === 3) {
+        digletts.create(730, 530, "diglett");
       }
 
       if (pikachus.countActive(true) === 0) {
